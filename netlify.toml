@@ -15,4 +15,4 @@
 # For Netlify Functions (if you add them later)
 [functions]
   directory = "functions"
-  node_bundler = "npm"
+  node_bundler = "esbuild"
