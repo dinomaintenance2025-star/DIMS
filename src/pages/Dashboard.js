@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 import '../styles/Dashboard.css';
 
 const Dashboard = () => {
+  const { currentUser } = useContext(AuthContext);
   const [stats, setStats] = useState({
     totalItems: 0,
     lowStock: 0,
@@ -52,6 +54,9 @@ const Dashboard = () => {
         <div className="action-buttons">
           <Link to="/inventory/new" className="btn primary">Add New Item</Link>
           <Link to="/inventory" className="btn secondary">View All Items</Link>
+          {currentUser?.isAdmin && (
+            <Link to="/admin/add-account" className="btn admin">Add Account</Link>
+          )}
         </div>
       </div>
     </div>
