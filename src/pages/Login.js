@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../firebase';
 import '../styles/Login.css';
 
@@ -11,7 +11,6 @@ const Login = ({ onLogin }) => {
   });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
   const [touched, setTouched] = useState({
     email: false,
     password: false
@@ -68,7 +67,7 @@ const Login = ({ onLogin }) => {
     }));
   };
 
-  const handleAuth = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setTouched({ email: true, password: true });
     
@@ -80,24 +79,11 @@ const Login = ({ onLogin }) => {
     setError('');
     
     try {
-      let userCredential;
-      
-      if (isSignUp) {
-        // Sign up
-        userCredential = await createUserWithEmailAndPassword(
-          auth,
-          credentials.email,
-          credentials.password
-        );
-        console.log('User created successfully!', userCredential.user);
-      } else {
-        // Sign in
-        userCredential = await signInWithEmailAndPassword(
-          auth,
-          credentials.email,
-          credentials.password
-        );
-      }
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        credentials.email,
+        credentials.password
+      );
       
       // Get the user's ID token
       const idToken = await userCredential.user.getIdToken();
@@ -148,11 +134,11 @@ const Login = ({ onLogin }) => {
     <div className="login-container">
       <div className="login-box">
         <h2>DinoWorld Inventory Management System (DIMS)</h2>
-        <p>{isSignUp ? 'Create a new account' : 'Please log in to continue'}</p>
+        <p>Please log in to continue</p>
         
         {error && <div className="error-message">{error}</div>}
         
-        <form onSubmit={handleAuth}>
+        <form onSubmit={handleLogin}>
           <div className="form-group">
             <label htmlFor="email">Email</label>
             <input
@@ -186,42 +172,8 @@ const Login = ({ onLogin }) => {
             className="login-button"
             disabled={isLoading}
           >
-            {isLoading 
-              ? (isSignUp ? 'Creating account...' : 'Logging in...') 
-              : (isSignUp ? 'Sign Up' : 'Log In')}
+            {isLoading ? 'Logging in...' : 'Log In'}
           </button>
-          
-          <div className="switch-mode">
-            {isSignUp ? (
-              <p>
-                Already have an account?{' '}
-                <button 
-                  type="button" 
-                  className="switch-button"
-                  onClick={() => {
-                    setIsSignUp(false);
-                    setError('');
-                  }}
-                >
-                  Log In
-                </button>
-              </p>
-            ) : (
-              <p>
-                Don't have an account?{' '}
-                <button 
-                  type="button" 
-                  className="switch-button"
-                  onClick={() => {
-                    setIsSignUp(true);
-                    setError('');
-                  }}
-                >
-                  Sign Up
-                </button>
-              </p>
-            )}
-          </div>
         </form>
       </div>
     </div>
